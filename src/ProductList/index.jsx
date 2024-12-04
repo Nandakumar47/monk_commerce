@@ -52,7 +52,6 @@ function ProductList(props) {
   }, []);
 
   const changeSelection = (isProduct, isChecked, productId, variantId) => {
-    debugger;
     if (isProduct) {
       const updatedList = restructuredProductList.map((product) => {
         if (product.id === productId) {

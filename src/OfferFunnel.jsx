@@ -1,9 +1,10 @@
 import { useState } from "react";
 import ProductEntry from "./ProductEntry";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
-import { Box, Button } from "@mui/material";
+import { Alert, Box, Button, Checkbox } from "@mui/material";
 import { v4 as uuid } from "uuid";
 import ProductList from "./ProductList";
+import { grey } from "@mui/material/colors";
 function OfferFunnel() {
   const [selectedProductsList, setSelectedProductsList] = useState([
     {
@@ -27,7 +28,6 @@ function OfferFunnel() {
     setSelectedProductsList(reorderedItems);
   };
   const handleProductDetailsChange = (id, values) => {
-    debugger;
     const updatedData = selectedProductsList.map((item) => {
       if (item.productItemId === id) {
         return {
@@ -138,9 +138,18 @@ function OfferFunnel() {
         padding: "16px",
       }}
     >
-      <h1>OfferFunnel</h1>
+      <h1>Offer Funnel</h1>
+      <hr />
       <Box>
-        <h4>Add bundle product-max 4 products</h4>
+        <h4>
+          Add bundle product
+          {` (Max. 4 products)`}
+        </h4>
+        <Alert severity="info">
+          Offer Bundle will be shown to the customer whenever any o the bundle
+          products are added to the cart.
+        </Alert>
+        <p style={{ color: "red" }}>Please select the offered product</p>
         <DragDropContext onDragEnd={handleDragEnd}>
           <Droppable droppableId="droppable">
             {(provided) => (
@@ -149,7 +158,7 @@ function OfferFunnel() {
                 ref={provided.innerRef}
                 style={{
                   padding: "16px",
-                  minHeight: "200px",
+                  minHeight: "100px",
                 }}
               >
                 {selectedProductsList.map((item, index) => (
@@ -222,6 +231,17 @@ function OfferFunnel() {
           handleProductAdd={handleProductAdd}
         />
       )}
+      <Box sx={{ display: "flex" }}>
+        <Checkbox color="success" />
+        <p>Apply discount on compare price</p>
+      </Box>
+      <p
+        style={{ margin: "0", padding: 0, color: grey[800], marginLeft: "8px" }}
+      >
+        Discount will be applied on compare price of the product. Discount set
+        inside the upsell offer should be more than or equal to the discount set
+        on product in your store
+      </p>
     </Box>
   );
 }

@@ -87,7 +87,7 @@ function ProductEntry(props) {
                   type="number"
                   value={productData.discountValue}
                   onChange={(evt) => {
-                    handleProductDetailsChange(productData.dragId, {
+                    handleProductDetailsChange(productData.productItemId, {
                       discountValue: evt.target.value,
                     });
                   }}

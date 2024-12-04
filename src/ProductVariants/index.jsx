@@ -7,7 +7,6 @@ import { v4 as uuid } from "uuid";
 function ProductVariants({ variants, handleVariantDelete }) {
   const [items, setItems] = useState([]);
   useEffect(() => {
-    debugger;
     setItems(variants);
   }, [variants]);
   const handleDragEnd = (result) => {
