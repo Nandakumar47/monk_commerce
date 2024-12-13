@@ -6,12 +6,14 @@ import {
   Button,
   Checkbox,
   TextField,
+  TablePagination,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import React, { useEffect, useState } from "react";
 import { dataSet } from "../constant";
 import ProductVariantList from "./ProductVariantList";
-import { Search } from "@mui/icons-material";
+import { Close, Search } from "@mui/icons-material";
+import axios from "axios";
 const style = {
   position: "absolute",
   top: "50%",
@@ -23,87 +25,126 @@ const style = {
   borderRadius: "8px",
   boxShadow: 24,
   p: 2,
+  height: "calc(100% - 80px)",
 };
 
 function ProductList(props) {
   const { openProductList, handleClose, handleProductAdd } = props;
   const [restructuredProductList, setRestructuredProductList] = useState([]);
-  const [searchResult, setSearchResult] = useState([]);
   const [searchText, setSearchText] = useState("");
-  useEffect(() => {
-    const searchResultValues = restructuredProductList.filter((result) => {
-      return result.title.toLowerCase().includes(searchText.toLowerCase());
-    });
-    setSearchResult(searchResultValues);
-  }, [searchText, restructuredProductList]);
-  useEffect(() => {
-    const modifiedList = dataSet.map((product) => {
-      return {
-        ...product,
-        isSelected: false,
-        variants: product.variants.map((variant) => ({
-          ...variant,
-          isSelected: false,
-        })),
-      };
-    });
-    setRestructuredProductList(modifiedList);
-    setSearchResult(modifiedList);
-  }, []);
+  const [page, setPage] = useState(1);
+  const [selectedItems, setSelectedItems] = useState([]);
 
-  const changeSelection = (isProduct, isChecked, productId, variantId) => {
-    if (isProduct) {
-      const updatedList = restructuredProductList.map((product) => {
-        if (product.id === productId) {
-          return {
-            ...product,
-            isSelected: isChecked,
-            variants: product.variants.map((variant) => ({
-              ...variant,
-              isSelected: isChecked,
-            })),
-          };
-        } else {
-          return product;
-        }
+  useEffect(() => {
+    fetchAndUpdateProductList(searchText, page);
+  }, []);
+  useEffect(() => {
+    console.log({ selectedItems });
+  }, [selectedItems]);
+  const fetchAndUpdateProductList = async (searchText, page) => {
+    try {
+      const queryParams = { search: searchText, page: page, limit: 5 };
+      const headers = { "x-api-key": "72njgfa948d9aS7gs5" };
+      const url = "https://stageapi.monkcommerce.app/task/products/search";
+      const response = await axios.get(url, {
+        params: queryParams,
+        headers,
       });
-      setRestructuredProductList(updatedList);
-    } else {
-      const updatedList = restructuredProductList.map((product) => {
-        if (product.id === productId) {
-          return {
-            ...product,
-            variants: product.variants.map((variant) => {
-              if (variant.id === variantId) {
-                return {
-                  ...variant,
-                  isSelected: isChecked,
-                };
-              } else {
-                return variant;
-              }
-            }),
-          };
+      if (response.status === 200 && response.data) {
+        const products = response.data;
+        setRestructuredProductList(products);
+      }
+    } catch (error) {}
+  };
+  const handleProductCheck = (product, isChecked) => {
+    setSelectedItems((prev) => {
+      const updated = [...prev];
+      const existingProductIndex = updated.findIndex(
+        (item) => item.id === product.id
+      );
+
+      if (isChecked) {
+        if (existingProductIndex !== -1) {
+          const existingProduct = updated[existingProductIndex];
+          const unselectedVariants = product.variants.filter(
+            (variant) =>
+              !existingProduct.variants.some(
+                (selectedVariant) => selectedVariant.id === variant.id
+              )
+          );
+          existingProduct.variants.push(...unselectedVariants);
         } else {
-          return product;
+          updated.push({
+            ...product,
+            variants: [...product.variants],
+          });
         }
-      });
-      setRestructuredProductList(updatedList);
-    }
+      } else {
+        return updated.filter((item) => item.id !== product.id);
+      }
+
+      return updated;
+    });
+  };
+
+  const handleVariantCheck = (product, variant, isChecked) => {
+    setSelectedItems((prev) => {
+      const updated = [...prev];
+      const productIndex = updated.findIndex((item) => item.id === product.id);
+
+      if (productIndex === -1 && isChecked) {
+        updated.push({
+          ...product,
+          variants: [variant],
+        });
+      } else if (productIndex !== -1) {
+        const existingProduct = updated[productIndex];
+        if (isChecked) {
+          existingProduct.variants.push(variant);
+        } else {
+          existingProduct.variants = existingProduct.variants.filter(
+            (v) => v.id !== variant.id
+          );
+          if (existingProduct.variants.length === 0) {
+            updated.splice(productIndex, 1);
+          }
+        }
+      }
+
+      return updated;
+    });
   };
   const handleAddProductsClick = () => {
-    const selectedProducts = restructuredProductList
-      .filter(
-        (product) =>
-          product.isSelected ||
-          product.variants.some((variant) => variant.isSelected)
-      )
-      .map((product) => ({
-        ...product,
-        variants: product.variants.filter((variant) => variant.isSelected),
-      }));
-    handleProductAdd(selectedProducts);
+    handleProductAdd(selectedItems);
     handleClose();
+  };
+  const handleSearch = (searchValue) => {
+    setSearchText(searchValue);
+    fetchAndUpdateProductList(searchValue, 0);
+  };
+  const isProductSelected = (product) => {
+    const selectedProduct = selectedItems.find(
+      (item) => item.id === product.id
+    );
+
+    if (!selectedProduct) {
+      return false;
+    }
+
+    return selectedProduct.variants.length === product.variants.length;
+  };
+
+  const isVariantSelected = (product, variant) => {
+    const selectedProduct = selectedItems.find(
+      (item) => item.id === product.id
+    );
+    if (selectedProduct) {
+      const isVariantFound = selectedProduct.variants.some(
+        (v) => v.id === variant.id
+      );
+      return Boolean(isVariantFound);
+    }
+    return false;
   };
   return (
     <Modal
@@ -136,58 +177,74 @@ function ProductList(props) {
             size="small"
             placeholder="Search products"
             value={searchText}
-            onChange={(evt) => setSearchText(evt.target.value)}
+            onChange={(evt) => handleSearch(evt.target.value)}
             slotProps={{
-              input: { startAdornment: <Search sx={{ marginRight: "4px" }} /> },
+              input: {
+                startAdornment: <Search sx={{ marginRight: "4px" }} />,
+                endAdornment: (
+                  <IconButton disableRipple onClick={() => handleSearch("")}>
+                    <Close />
+                  </IconButton>
+                ),
+              },
             }}
           />
         </Box>
         <hr />
-        {searchResult?.length ? (
-          searchResult?.map((data) => (
-            <>
-              <Box
-                key={data.id}
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "8px",
-                  marginBottom: "8px",
-                }}
-              >
-                <Checkbox
-                  onChange={(evt) => {
-                    changeSelection(true, evt.target.checked, data.id);
-                  }}
-                  color="success"
-                  checked={data.isSelected}
-                />
-                <img
-                  src={data.image.src}
-                  alt={data.title}
-                  style={{
-                    width: "40px",
-                    height: "40px",
-                    objectFit: "cover",
-                    borderRadius: "4px",
-                    border: "1px solid grey",
-                  }}
-                />
-                <Typography variant="body1">{data.title}</Typography>
-              </Box>
-              <Box sx={{ marginLeft: "40px" }}>
-                <ProductVariantList
-                  variants={data.variants}
-                  changeSelection={changeSelection}
-                />
-              </Box>
-              <hr />
-            </>
-          ))
-        ) : (
-          <Box>No Data Available</Box>
-        )}
-
+        <Box>
+          <Box sx={{ height: "380px", overflowY: "auto" }}>
+            {restructuredProductList?.length ? (
+              restructuredProductList?.map((data) => (
+                <>
+                  <Box
+                    key={data.id}
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "8px",
+                      marginBottom: "8px",
+                    }}
+                  >
+                    <Checkbox
+                      onChange={(evt) => {
+                        handleProductCheck(data, evt.target.checked);
+                      }}
+                      color="success"
+                      checked={isProductSelected(data)}
+                    />
+                    <img
+                      src={data.image.src}
+                      alt={data.title}
+                      style={{
+                        width: "40px",
+                        height: "40px",
+                        objectFit: "cover",
+                        borderRadius: "4px",
+                        border: "1px solid grey",
+                      }}
+                    />
+                    <Typography variant="body1">{data.title}</Typography>
+                  </Box>
+                  <Box sx={{ marginLeft: "40px" }}>
+                    <ProductVariantList
+                      variants={data.variants}
+                      onVariantChange={(variant, isChecked) =>
+                        handleVariantCheck(data, variant, isChecked)
+                      }
+                      checkIsVariantSelected={(variant) => {
+                        const isSelected = isVariantSelected(data, variant);
+                        return isSelected;
+                      }}
+                    />
+                  </Box>
+                  <hr />
+                </>
+              ))
+            ) : (
+              <Box>No Data Available</Box>
+            )}
+          </Box>
+        </Box>
         <Box
           sx={{
             display: "flex",
@@ -195,7 +252,12 @@ function ProductList(props) {
             gap: 2,
             borderTop: "1px solid #ddd",
             pt: 1,
+            pb: 1,
             mt: 2,
+            position: "fixed",
+            bottom: 0,
+            width: "94%",
+            background: "white",
           }}
         >
           <Button

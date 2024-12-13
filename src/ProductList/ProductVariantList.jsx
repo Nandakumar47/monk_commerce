@@ -1,7 +1,11 @@
 import { Box, Checkbox, Typography } from "@mui/material";
 import React from "react";
 
-function ProductVariantList({ variants, changeSelection }) {
+function ProductVariantList({
+  variants,
+  onVariantChange,
+  checkIsVariantSelected,
+}) {
   return (
     <>
       {variants.map((data) => (
@@ -18,15 +22,10 @@ function ProductVariantList({ variants, changeSelection }) {
           <Box sx={{ display: "flex", alignItems: "center" }}>
             <Checkbox
               onChange={(evt) => {
-                changeSelection(
-                  false,
-                  evt.target.checked,
-                  data.product_id,
-                  data.id
-                );
+                onVariantChange(data, evt.target.checked);
               }}
               color="success"
-              checked={data?.isSelected}
+              checked={checkIsVariantSelected(data)}
             />
             <Typography variant="body1">{data.title}</Typography>
           </Box>
