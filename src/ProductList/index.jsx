@@ -232,7 +232,7 @@ function ProductList(props) {
                     display: "flex",
                     alignItems: "center",
                     gap: "8px",
-                    marginBottom: "8px",
+                    margin: "12px 0",
                   }}
                 >
                   <Checkbox
