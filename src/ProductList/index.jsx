@@ -7,6 +7,8 @@ import {
   Checkbox,
   TextField,
   TablePagination,
+  Backdrop,
+  CircularProgress,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import React, { useEffect, useState } from "react";
@@ -34,7 +36,7 @@ function ProductList(props) {
   const [searchText, setSearchText] = useState("");
   const [page, setPage] = useState(1);
   const [selectedItems, setSelectedItems] = useState([]);
-
+  const [isLoading, setIsLoading] = useState(false);
   useEffect(() => {
     fetchAndUpdateProductList(searchText, page);
   }, []);
@@ -43,6 +45,7 @@ function ProductList(props) {
   }, [selectedItems]);
   const fetchAndUpdateProductList = async (searchText, page) => {
     try {
+      setIsLoading(true);
       const queryParams = { search: searchText, page: page, limit: 5 };
       const headers = { "x-api-key": "72njgfa948d9aS7gs5" };
       const url = "https://stageapi.monkcommerce.app/task/products/search";
@@ -50,11 +53,14 @@ function ProductList(props) {
         params: queryParams,
         headers,
       });
+      setIsLoading(false);
       if (response.status === 200 && response.data) {
         const products = response.data;
         setRestructuredProductList(products);
       }
-    } catch (error) {}
+    } catch (error) {
+      setIsLoading(false);
+    }
   };
   const handleProductCheck = (product, isChecked) => {
     setSelectedItems((prev) => {
@@ -154,6 +160,13 @@ function ProductList(props) {
       aria-describedby="modal-modal-description"
     >
       <Box sx={style}>
+        <Backdrop
+          sx={(theme) => ({ color: "#fff", zIndex: theme.zIndex.drawer + 1 })}
+          open={isLoading}
+          onClick={() => {}}
+        >
+          <CircularProgress color="inherit" />
+        </Backdrop>
         <Box
           sx={{
             display: "flex",
