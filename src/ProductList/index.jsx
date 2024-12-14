@@ -11,7 +11,7 @@ import {
   CircularProgress,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { dataSet } from "../constant";
 import ProductVariantList from "./ProductVariantList";
 import { Close, Search } from "@mui/icons-material";
@@ -29,7 +29,15 @@ const style = {
   p: 2,
   height: "calc(100% - 80px)",
 };
-
+const handleDebouncing = () => {
+  let timer;
+  return (cb, delay = 1000, ...args) => {
+    if (timer) {
+      clearTimeout(timer);
+    }
+    timer = setTimeout(() => cb(...args), delay);
+  };
+};
 function ProductList(props) {
   const { openProductList, handleClose, handleProductAdd } = props;
   const [restructuredProductList, setRestructuredProductList] = useState([]);
@@ -37,6 +45,7 @@ function ProductList(props) {
   const [page, setPage] = useState(1);
   const [selectedItems, setSelectedItems] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const debounceFetch = useCallback(handleDebouncing(), []);
   useEffect(() => {
     fetchAndUpdateProductList(searchText, page);
   }, []);
@@ -120,13 +129,14 @@ function ProductList(props) {
       return updated;
     });
   };
+
   const handleAddProductsClick = () => {
     handleProductAdd(selectedItems);
     handleClose();
   };
   const handleSearch = (searchValue) => {
     setSearchText(searchValue);
-    fetchAndUpdateProductList(searchValue, 0);
+    debounceFetch(fetchAndUpdateProductList, 500, searchValue, 0);
   };
   const isProductSelected = (product) => {
     const selectedProduct = selectedItems.find(
