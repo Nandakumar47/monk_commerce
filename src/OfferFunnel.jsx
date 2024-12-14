@@ -1,7 +1,7 @@
 import { useState } from "react";
 import ProductEntry from "./ProductEntry";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
-import { Alert, Box, Button, Checkbox } from "@mui/material";
+import { Alert, Box, Button, Checkbox, Divider } from "@mui/material";
 import { v4 as uuid } from "uuid";
 import ProductList from "./ProductList";
 import { grey } from "@mui/material/colors";
@@ -139,7 +139,7 @@ function OfferFunnel() {
       }}
     >
       <h1>Offer Funnel</h1>
-      <hr />
+      <Divider />
       <Box>
         <h4>
           Add bundle product

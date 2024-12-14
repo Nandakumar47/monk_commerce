@@ -51,7 +51,8 @@ function ProductEntry(props) {
           container
           sx={{ width: "100%" }}
           alignItems={"center"}
-          gap={"8px"}
+          justifyContent={"space-between"}
+          // gap={"8px"}
         >
           <Grid2 size={{ xs: 8 }}>
             <TextField
@@ -79,7 +80,7 @@ function ProductEntry(props) {
               }}
             />
           </Grid2>
-          <Grid2 size={{ xs: 3 }}>
+          <Grid2 size={{ xs: 4 }} sx={{ paddingLeft: "4px" }}>
             {showDiscountOptions ? (
               <Box sx={{ display: "flex", gap: "4px" }}>
                 <TextField
