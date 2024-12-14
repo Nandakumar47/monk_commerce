@@ -277,7 +277,7 @@ function ProductList(props) {
         <Box
           sx={{
             display: "flex",
-            justifyContent: "flex-end",
+            justifyContent: "space-between",
             gap: 2,
             borderTop: "1px solid #ddd",
             padding: "8px 16px",
@@ -289,16 +289,19 @@ function ProductList(props) {
             borderRadius: "8px",
           }}
         >
-          <Button
-            variant="contained"
-            color="success"
-            onClick={handleAddProductsClick}
-          >
-            Add
-          </Button>
-          <Button variant="outlined" color="success" onClick={handleClose}>
-            Cancel
-          </Button>
+          <Typography>{selectedItems.length} products selected</Typography>
+          <Box sx={{ display: "flex", gap: "8px" }}>
+            <Button
+              variant="contained"
+              color="success"
+              onClick={handleAddProductsClick}
+            >
+              Add
+            </Button>
+            <Button variant="outlined" color="success" onClick={handleClose}>
+              Cancel
+            </Button>
+          </Box>
         </Box>
       </Box>
     </Modal>
