@@ -27,7 +27,7 @@ const style = {
   borderRadius: "8px",
   boxShadow: 24,
   p: 2,
-  height: "calc(100% - 80px)",
+  height: "80vh",
 };
 const handleDebouncing = (delay) => {
   let timer;
@@ -214,59 +214,57 @@ function ProductList(props) {
           />
         </Box>
         <hr />
-        <Box>
-          <Box sx={{ height: "380px", overflowY: "auto" }}>
-            {restructuredProductList?.length ? (
-              restructuredProductList?.map((data) => (
-                <>
-                  <Box
-                    key={data.id}
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "8px",
-                      marginBottom: "8px",
+        <Box sx={{ height: "calc(100% - 180px)", overflowY: "auto" }}>
+          {restructuredProductList?.length ? (
+            restructuredProductList?.map((data) => (
+              <>
+                <Box
+                  key={data.id}
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "8px",
+                    marginBottom: "8px",
+                  }}
+                >
+                  <Checkbox
+                    onChange={(evt) => {
+                      handleProductCheck(data, evt.target.checked);
                     }}
-                  >
-                    <Checkbox
-                      onChange={(evt) => {
-                        handleProductCheck(data, evt.target.checked);
-                      }}
-                      color="success"
-                      checked={isProductSelected(data)}
-                    />
-                    <img
-                      src={data.image.src}
-                      alt={data.title}
-                      style={{
-                        width: "40px",
-                        height: "40px",
-                        objectFit: "cover",
-                        borderRadius: "4px",
-                        border: "1px solid grey",
-                      }}
-                    />
-                    <Typography variant="body1">{data.title}</Typography>
-                  </Box>
-                  <Box sx={{ marginLeft: "40px" }}>
-                    <ProductVariantList
-                      variants={data.variants}
-                      onVariantChange={(variant, isChecked) =>
-                        handleVariantCheck(data, variant, isChecked)
-                      }
-                      checkIsVariantSelected={(variant) => {
-                        const isSelected = isVariantSelected(data, variant);
-                        return isSelected;
-                      }}
-                    />
-                  </Box>
-                  <hr />
-                </>
-              ))
-            ) : (
-              <Box>No Data Available</Box>
-            )}
-          </Box>
+                    color="success"
+                    checked={isProductSelected(data)}
+                  />
+                  <img
+                    src={data.image.src}
+                    alt={data.title}
+                    style={{
+                      width: "40px",
+                      height: "40px",
+                      objectFit: "cover",
+                      borderRadius: "4px",
+                      border: "1px solid grey",
+                    }}
+                  />
+                  <Typography variant="body1">{data.title}</Typography>
+                </Box>
+                <Box sx={{ marginLeft: "40px" }}>
+                  <ProductVariantList
+                    variants={data.variants}
+                    onVariantChange={(variant, isChecked) =>
+                      handleVariantCheck(data, variant, isChecked)
+                    }
+                    checkIsVariantSelected={(variant) => {
+                      const isSelected = isVariantSelected(data, variant);
+                      return isSelected;
+                    }}
+                  />
+                </Box>
+                <hr />
+              </>
+            ))
+          ) : (
+            <Box>No Data Available</Box>
+          )}
         </Box>
         <Box
           sx={{
