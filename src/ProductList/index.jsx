@@ -29,9 +29,9 @@ const style = {
   p: 2,
   height: "calc(100% - 80px)",
 };
-const handleDebouncing = () => {
+const handleDebouncing = (delay) => {
   let timer;
-  return (cb, delay = 1000, ...args) => {
+  return (cb, ...args) => {
     if (timer) {
       clearTimeout(timer);
     }
@@ -45,7 +45,7 @@ function ProductList(props) {
   const [page, setPage] = useState(1);
   const [selectedItems, setSelectedItems] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const debounceFetch = useCallback(handleDebouncing(), []);
+  const debounceFetch = useCallback(handleDebouncing(1000), []);
   useEffect(() => {
     fetchAndUpdateProductList(searchText, page);
   }, []);
@@ -136,7 +136,7 @@ function ProductList(props) {
   };
   const handleSearch = (searchValue) => {
     setSearchText(searchValue);
-    debounceFetch(fetchAndUpdateProductList, 500, searchValue, 0);
+    debounceFetch(fetchAndUpdateProductList, searchValue, 0);
   };
   const isProductSelected = (product) => {
     const selectedProduct = selectedItems.find(
@@ -204,11 +204,11 @@ function ProductList(props) {
             slotProps={{
               input: {
                 startAdornment: <Search sx={{ marginRight: "4px" }} />,
-                endAdornment: (
+                endAdornment: searchText.length ? (
                   <IconButton disableRipple onClick={() => handleSearch("")}>
                     <Close />
                   </IconButton>
-                ),
+                ) : null,
               },
             }}
           />
