@@ -52,10 +52,31 @@ function ProductEntry(props) {
           sx={{ width: "100%" }}
           alignItems={"center"}
           justifyContent={"space-between"}
-          // gap={"8px"}
         >
           <Grid2 size={{ xs: 8 }}>
-            <TextField
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                padding: "0 8px",
+                border: "1px solid lightgrey",
+                alignItems: "center",
+              }}
+            >
+              {productData.name?.length ? (
+                <Typography>{productData.name}</Typography>
+              ) : (
+                <Typography sx={{ color: "grey" }}>Select Product</Typography>
+              )}
+              <IconButton
+                onClick={() => {
+                  handleEditItemClick(position);
+                }}
+              >
+                <Edit style={{ cursor: "pointer" }} color="success" />
+              </IconButton>
+            </Box>
+            {/* <TextField
               id="outlined-password-input"
               variant="outlined"
               disabled
@@ -78,7 +99,7 @@ function ProductEntry(props) {
                   ),
                 },
               }}
-            />
+            /> */}
           </Grid2>
           <Grid2 size={{ xs: 4 }} sx={{ paddingLeft: "4px" }}>
             {showDiscountOptions ? (

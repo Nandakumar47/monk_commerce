@@ -1,11 +1,12 @@
+import { Box } from "@mui/material";
 import "./App.css";
 import OfferFunnel from "./OfferFunnel.jsx";
 
 function App() {
   return (
-    <div>
+    <Box sx={{ height: "100vh", background: "lightblue" }}>
       <OfferFunnel />
-    </div>
+    </Box>
   );
 }
 

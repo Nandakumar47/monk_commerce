@@ -136,20 +136,25 @@ function OfferFunnel() {
         width: "800px",
         margin: "auto",
         padding: "16px",
+        background: "white",
+        height: "100%",
+        boxSizing: "border-box",
       }}
     >
       <h1>Offer Funnel</h1>
-      <Divider />
-      <Box>
+      <Divider sx={{ margin: "8px 0" }} />
+      <Box sx={{ mt: 3 }}>
         <h4>
           Add bundle product
           {` (Max. 4 products)`}
         </h4>
-        <Alert severity="info">
+        <Alert severity="info" sx={{ margin: "8px 0" }}>
           Offer Bundle will be shown to the customer whenever any o the bundle
           products are added to the cart.
         </Alert>
-        <p style={{ color: "red" }}>Please select the offered product</p>
+        <p style={{ color: "red", marginTop: "8x" }}>
+          Please select the offered product
+        </p>
         <DragDropContext onDragEnd={handleDragEnd}>
           <Droppable droppableId="droppable">
             {(provided) => (
@@ -211,6 +216,7 @@ function OfferFunnel() {
                     }}
                   >
                     <Button
+                      sx={{ marginRight: "56px", width: "300px" }}
                       color="success"
                       variant="outlined"
                       onClick={handleProductListOpen}
@@ -231,7 +237,7 @@ function OfferFunnel() {
           handleProductAdd={handleProductAdd}
         />
       )}
-      <Box sx={{ display: "flex" }}>
+      <Box sx={{ display: "flex", alignItems: "center" }}>
         <Checkbox color="success" />
         <p>Apply discount on compare price</p>
       </Box>
