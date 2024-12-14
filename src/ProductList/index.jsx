@@ -9,6 +9,7 @@ import {
   TablePagination,
   Backdrop,
   CircularProgress,
+  Divider,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import React, { useCallback, useEffect, useState } from "react";
@@ -26,7 +27,7 @@ const style = {
   border: "1px solid lightgrey",
   borderRadius: "8px",
   boxShadow: 24,
-  p: 2,
+  pb: 5,
   height: "80vh",
 };
 const handleDebouncing = (delay) => {
@@ -183,7 +184,7 @@ function ProductList(props) {
             justifyContent: "space-between",
             alignItems: "center",
             borderBottom: "1px solid #ddd",
-            pb: 1,
+            p: 2,
             mb: 2,
           }}
         >
@@ -194,7 +195,7 @@ function ProductList(props) {
             <CloseIcon />
           </IconButton>
         </Box>
-        <Box sx={{ marginBottom: "8px" }}>
+        <Box sx={{ margin: "8px" }}>
           <TextField
             fullWidth
             size="small"
@@ -213,8 +214,15 @@ function ProductList(props) {
             }}
           />
         </Box>
-        <hr />
-        <Box sx={{ height: "calc(100% - 180px)", overflowY: "auto" }}>
+        <Divider />
+        <Box
+          sx={{
+            height: "calc(100% - 180px)",
+            overflowY: "auto",
+            padding: "8px",
+            mt: 1,
+          }}
+        >
           {restructuredProductList?.length ? (
             restructuredProductList?.map((data) => (
               <>
@@ -259,7 +267,7 @@ function ProductList(props) {
                     }}
                   />
                 </Box>
-                <hr />
+                <Divider />
               </>
             ))
           ) : (
@@ -272,13 +280,13 @@ function ProductList(props) {
             justifyContent: "flex-end",
             gap: 2,
             borderTop: "1px solid #ddd",
-            pt: 1,
-            pb: 1,
-            mt: 2,
-            position: "fixed",
+            padding: "8px 16px",
+            position: "absolute",
             bottom: 0,
-            width: "94%",
+            width: "100%",
             background: "white",
+            boxSizing: "border-box",
+            borderRadius: "8px",
           }}
         >
           <Button
