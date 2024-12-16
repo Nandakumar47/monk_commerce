@@ -135,6 +135,7 @@ function ProductList(props) {
   };
   const handleSearch = (searchValue) => {
     setSearchText(searchValue);
+    setPage(1);
     debounceFetch(fetchAndUpdateProductList, searchValue, 1);
   };
   const isProductSelected = (product) => {
