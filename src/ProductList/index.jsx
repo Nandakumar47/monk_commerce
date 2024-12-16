@@ -11,12 +11,13 @@ import {
   CircularProgress,
   Divider,
   Pagination,
+  Tooltip,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import React, { useCallback, useEffect, useState } from "react";
 import { dataSet } from "../constant";
 import ProductVariantList from "./ProductVariantList";
-import { Close, Search } from "@mui/icons-material";
+import { ChevronLeft, ChevronRight, Close, Search } from "@mui/icons-material";
 import axios from "axios";
 const style = {
   position: "absolute",
@@ -48,12 +49,14 @@ function ProductList(props) {
   const [selectedItems, setSelectedItems] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const debounceFetch = useCallback(handleDebouncing(1000), []);
+  const [isPageIncrementDisabled, setIsPageIncrementDisabled] = useState(false);
   useEffect(() => {
     fetchAndUpdateProductList(searchText, page);
   }, []);
   const fetchAndUpdateProductList = async (searchText, page) => {
     try {
       setIsLoading(true);
+      isPageIncrementDisabled && setIsPageIncrementDisabled(false);
       const queryParams = { search: searchText, page: page, limit: 5 };
       const headers = { "x-api-key": "72njgfa948d9aS7gs5" };
       const url = "https://stageapi.monkcommerce.app/task/products/search";
@@ -65,6 +68,9 @@ function ProductList(props) {
       if (response.status === 200 && response.data) {
         const products = response.data;
         setRestructuredProductList(products);
+        if (products?.length < 5) {
+          setIsPageIncrementDisabled(true);
+        }
       }
     } catch (error) {
       setIsLoading(false);
@@ -162,9 +168,17 @@ function ProductList(props) {
     }
     return false;
   };
-  const handlePageChange = (event, page) => {
-    setPage(page);
-    fetchAndUpdateProductList(searchText, page);
+  // const handlePageChange = (event, page) => {
+  //   setPage(page);
+  //   fetchAndUpdateProductList(searchText, page);
+  // };
+  const handlePageIncrement = () => {
+    setPage((prev) => prev + 1);
+    fetchAndUpdateProductList(searchText, page + 1);
+  };
+  const pageDecrement = () => {
+    setPage((prev) => prev - 1);
+    fetchAndUpdateProductList(searchText, page - 1);
   };
   return (
     <Modal
@@ -219,13 +233,37 @@ function ProductList(props) {
         </Box>
         <Divider />
         <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-          <Pagination
+          <Box
+            sx={{
+              display: "flex",
+              padding: "8px",
+              marginRight: "8px",
+              alignItems: "center",
+              gap: "4px",
+            }}
+          >
+            <Tooltip title="Prev">
+              <IconButton disabled={page === 1} onClick={pageDecrement}>
+                <ChevronLeft />
+              </IconButton>
+            </Tooltip>
+            {page}
+            <Tooltip title="Next">
+              <IconButton
+                onClick={handlePageIncrement}
+                disabled={isPageIncrementDisabled}
+              >
+                <ChevronRight />
+              </IconButton>
+            </Tooltip>
+          </Box>
+          {/* <Pagination
             count={10} // Total number of pages
             page={page} // Current page
             onChange={handlePageChange} // Page change handler
             color="success" // Customizes the color
             sx={{ mt: 2 }}
-          />
+          /> */}
         </Box>
         <Box
           sx={{
