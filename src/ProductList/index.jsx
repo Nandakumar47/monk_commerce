@@ -10,6 +10,7 @@ import {
   Backdrop,
   CircularProgress,
   Divider,
+  Pagination,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import React, { useCallback, useEffect, useState } from "react";
@@ -50,9 +51,6 @@ function ProductList(props) {
   useEffect(() => {
     fetchAndUpdateProductList(searchText, page);
   }, []);
-  useEffect(() => {
-    console.log({ selectedItems });
-  }, [selectedItems]);
   const fetchAndUpdateProductList = async (searchText, page) => {
     try {
       setIsLoading(true);
@@ -137,7 +135,7 @@ function ProductList(props) {
   };
   const handleSearch = (searchValue) => {
     setSearchText(searchValue);
-    debounceFetch(fetchAndUpdateProductList, searchValue, 0);
+    debounceFetch(fetchAndUpdateProductList, searchValue, 1);
   };
   const isProductSelected = (product) => {
     const selectedProduct = selectedItems.find(
@@ -162,6 +160,10 @@ function ProductList(props) {
       return Boolean(isVariantFound);
     }
     return false;
+  };
+  const handlePageChange = (event, page) => {
+    setPage(page);
+    fetchAndUpdateProductList(searchText, page);
   };
   return (
     <Modal
@@ -215,6 +217,15 @@ function ProductList(props) {
           />
         </Box>
         <Divider />
+        <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+          <Pagination
+            count={10} // Total number of pages
+            page={page} // Current page
+            onChange={handlePageChange} // Page change handler
+            color="success" // Customizes the color
+            sx={{ mt: 2 }}
+          />
+        </Box>
         <Box
           sx={{
             height: "calc(100% - 180px)",
@@ -274,6 +285,7 @@ function ProductList(props) {
             <Box>No Data Available</Box>
           )}
         </Box>
+
         <Box
           sx={{
             display: "flex",
